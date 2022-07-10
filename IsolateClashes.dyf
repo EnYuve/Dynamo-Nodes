@@ -1,0 +1,427 @@
+{
+  "Uuid": "3b818197-01c0-4fc5-85a9-3fcacf64ab51",
+  "IsCustomNode": true,
+  "Category": "UBetter.View",
+  "Description": "Isolates in view all the clashing elements as per Clash detectiond Report given",
+  "Name": "IsolateClashes",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "success",
+      "Id": "507de5ce14a94562988242f003664b81",
+      "Inputs": [
+        {
+          "Id": "692bfec7027545309da2ff28e1d8c41d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Una función de salida, se debe utilizar con nodos personalizados"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef TempIsolateElements(view, items):\r\n\tif not items: return False\r\n\telif not isinstance(items, list): items = [items]\r\n\tielements = List[ElementId]([x.Id for x in UnwrapElement(items)])\r\n\ttry:\r\n\t\tUnwrapElement(view).IsolateElementsTemporary(ielements)\r\n\t\treturn True\r\n\texcept: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[1], list):\r\n\tif isinstance(IN[0], list): OUT = [TempIsolateElements(x, y) for x, y in zip(IN[1], IN[0])]\r\n\telse: OUT = [TempIsolateElements(x, IN[0]) for x in IN[1]]\r\nelse: OUT = TempIsolateElements(IN[1], IN[0])\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "VariableInputPorts": true,
+      "Id": "2450b5562b284267bbbc3efa57012f85",
+      "Inputs": [
+        {
+          "Id": "008b0a6192fc4e0da79785c6d1631338",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "63445c6ac9d54061ba145370d1303070",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "706689bc74804b5bbd86dedb7772b067",
+          "Name": "OUT",
+          "Description": "Resultado de la secuencia de comandos de Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ejecuta una secuencia de comandos de IronPython incrustada"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "View to display"
+      },
+      "Id": "dd13c6931d9a4dd19536ce2dd0a12d4c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "45f15c6495c842d2920b3dd053a651fc",
+          "Name": "",
+          "Description": "Símbolo",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un parámetro de función, utilícelo con nodos personalizados.\r\n\r\nPuede especificar el tipo y el valor por defecto del parámetro. Por ejemplo,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Analysis.Collision_Report.getElements@string",
+      "Id": "6a2934e5b123480b934a72bbcfbda446",
+      "Inputs": [
+        {
+          "Id": "38371cc0ce6e42f1bc6a46cc987bdca8",
+          "Name": "path",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3f04ce47fac742d79f65b6c4198a3a2a",
+          "Name": "Element 1",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4a547df9df34481eb713619ee8144aef",
+          "Name": "Element 2",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get Elements from Html Revit Collision Report\n\nCollision_Report.getElements (path: string): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "d4c52d8bd3fb408d9c7ace674fdecf65",
+      "Inputs": [
+        {
+          "Id": "5d46de20ba3e4a3dbccb1d355b77d0fa",
+          "Name": "list",
+          "Description": "Lista que se debe aplanar.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c022515dbe0642f1a4a152509d6b4524",
+          "Name": "amt",
+          "Description": "Capas de anidamiento que se deben eliminar.\n\nint\nValor por defecto : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "516d0501a99d40b889d01586c83ea7b5",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Aplana una lista anidada de listas aplicando el valor especificado.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "8c162a8853db4cc6acfe7fc8c263d114",
+      "Inputs": [
+        {
+          "Id": "41e9764fac8b45baa3ba7e349fafb987",
+          "Name": "item0",
+          "Description": "Índice de elemento núm.0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5a9440283b1342b6835a31624afa0492",
+          "Name": "item1",
+          "Description": "Índice de elemento núm.1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3c7b44f8f5ce4bb8b2fcfdcd89e9eb26",
+          "Name": "list",
+          "Description": "Una lista",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Crea una nueva lista a partir de las entradas especificadas"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "report",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "Null",
+        "Description": "Clash Detection Report path (HTML) to provide"
+      },
+      "Id": "5bbc3a5341bc4299bb431dbc983c57b8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5ba61d588e40475395be9031ce66a011",
+          "Name": "",
+          "Description": "Símbolo",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Un parámetro de función, utilícelo con nodos personalizados.\r\n\r\nPuede especificar el tipo y el valor por defecto del parámetro. Por ejemplo,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "element",
+      "Id": "5785591451df42a69cbfc5856c9c649d",
+      "Inputs": [
+        {
+          "Id": "fa160681944040ca96f22c8515bccfc7",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Una función de salida, se debe utilizar con nodos personalizados"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "706689bc74804b5bbd86dedb7772b067",
+      "End": "692bfec7027545309da2ff28e1d8c41d",
+      "Id": "e92498c3480a466193a985c42774f051"
+    },
+    {
+      "Start": "45f15c6495c842d2920b3dd053a651fc",
+      "End": "63445c6ac9d54061ba145370d1303070",
+      "Id": "03d9d3942e8f45638ad16090444e76c6"
+    },
+    {
+      "Start": "3f04ce47fac742d79f65b6c4198a3a2a",
+      "End": "41e9764fac8b45baa3ba7e349fafb987",
+      "Id": "71ac1792b01e49598c14a6e9b0995ce6"
+    },
+    {
+      "Start": "4a547df9df34481eb713619ee8144aef",
+      "End": "5a9440283b1342b6835a31624afa0492",
+      "Id": "b58613968a264b20a926d564e2aa27c8"
+    },
+    {
+      "Start": "516d0501a99d40b889d01586c83ea7b5",
+      "End": "008b0a6192fc4e0da79785c6d1631338",
+      "Id": "aee9f3bc50cd4e6192731e321519f6ce"
+    },
+    {
+      "Start": "516d0501a99d40b889d01586c83ea7b5",
+      "End": "fa160681944040ca96f22c8515bccfc7",
+      "Id": "e330caa8d594450cb545ac5db8702a67"
+    },
+    {
+      "Start": "3c7b44f8f5ce4bb8b2fcfdcd89e9eb26",
+      "End": "5d46de20ba3e4a3dbccb1d355b77d0fa",
+      "Id": "e75482e3d3e54c5ba259a7e3291c09fd"
+    },
+    {
+      "Start": "5ba61d588e40475395be9031ce66a011",
+      "End": "38371cc0ce6e42f1bc6a46cc987bdca8",
+      "Id": "0ff6b78eba0444a9a0dbd1a8a127d179"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Universo_BIM",
+      "Version": "19.10.11",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "6a2934e5b123480b934a72bbcfbda446"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.5.0.7460",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Vista preliminar en segundo plano",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "507de5ce14a94562988242f003664b81",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 2032.7956694596451,
+        "Y": 609.884432297534
+      },
+      {
+        "Id": "2450b5562b284267bbbc3efa57012f85",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1853.884574846325,
+        "Y": 610.092877847318
+      },
+      {
+        "Id": "dd13c6931d9a4dd19536ce2dd0a12d4c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 587.06204125160491,
+        "Y": 638.264152636199
+      },
+      {
+        "Id": "6a2934e5b123480b934a72bbcfbda446",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Collision_Report.getElements",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 905.523473784675,
+        "Y": 364.92455246942603
+      },
+      {
+        "Id": "d4c52d8bd3fb408d9c7ace674fdecf65",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.Flatten",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1488.562890357015,
+        "Y": 362.027592030758
+      },
+      {
+        "Id": "8c162a8853db4cc6acfe7fc8c263d114",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List Create",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1257.045997434705,
+        "Y": 362.634560258004
+      },
+      {
+        "Id": "5bbc3a5341bc4299bb431dbc983c57b8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 336.0,
+        "Y": 364.758663393025
+      },
+      {
+        "Id": "5785591451df42a69cbfc5856c9c649d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 2029.2150622814447,
+        "Y": 359.0
+      }
+    ],
+    "Annotations": [],
+    "X": -129.49090503801705,
+    "Y": 157.59283928496484,
+    "Zoom": 0.3948930830298189
+  }
+}
